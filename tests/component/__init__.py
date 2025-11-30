@@ -1,0 +1,1 @@
+"""Component tests - components with mocked dependencies."""
