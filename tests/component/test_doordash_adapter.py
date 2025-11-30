@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import httpx
 import pytest
+
 from restaurant_sync_service.adapters.doordash_adapter import DoorDashAdapter
 from restaurant_sync_service.models.menu_models import Category, MenuItem
 

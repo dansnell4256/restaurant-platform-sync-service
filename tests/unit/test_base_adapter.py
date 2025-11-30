@@ -3,6 +3,7 @@
 from decimal import Decimal
 
 import pytest
+
 from restaurant_sync_service.adapters.base_adapter import PlatformAdapter
 from restaurant_sync_service.models.menu_models import Category, MenuItem
 
