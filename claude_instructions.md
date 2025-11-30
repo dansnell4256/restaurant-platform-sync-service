@@ -78,7 +78,7 @@ class PlatformAdapter(ABC):
     def format_menu(self, items: list[MenuItem], categories: list[Category]) -> dict | None:
         """Transform menu data to platform-specific format. Return None on failure."""
         pass
-    
+
     @abstractmethod
     async def publish_menu(self, restaurant_id: str, formatted_menu: dict) -> bool:
         """Publish menu to platform API. Return False on failure."""
@@ -144,7 +144,7 @@ class MenuServiceClient:
     def __init__(self, base_url: str, api_key: str):
         self.base_url = base_url
         self.api_key = api_key
-    
+
     async def get_menu_items(self, restaurant_id: str) -> list[MenuItem]:
         # Call menu service API
 ```
@@ -157,7 +157,7 @@ Store platform-specific configs in environment/secrets:
 class PlatformAdapterFactory:
     def __init__(self, platform_configs: dict):
         self.configs = platform_configs
-    
+
     def create_adapter(self, platform: str) -> PlatformAdapter:
         config = self.configs[platform]
         if platform == "doordash":

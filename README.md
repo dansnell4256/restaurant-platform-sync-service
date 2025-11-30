@@ -177,7 +177,7 @@ Response:
       "external_menu_id": "dd_menu_789"
     },
     "ubereats": {
-      "status": "FAILED", 
+      "status": "FAILED",
       "last_sync": "2025-01-15T09:45:00Z",
       "error": "API timeout",
       "retry_count": 2
@@ -224,7 +224,7 @@ The service listens for menu change events from the menu service:
   "detail-type": "Menu Item Changed",
   "detail": {
     "eventType": "CREATED",
-    "restaurantId": "rest_001", 
+    "restaurantId": "rest_001",
     "itemId": "item_456",
     "timestamp": "2025-01-15T10:30:00Z",
     "item": {
@@ -250,7 +250,7 @@ The service listens for menu change events from the menu service:
 ### Supported Platforms
 
 - **DoorDash** - Drive API integration
-- **Uber Eats** - Eats Manager API integration  
+- **Uber Eats** - Eats Manager API integration
 - **Grubhub** - Partner API integration (planned)
 
 ### Adding New Platforms
@@ -266,7 +266,7 @@ class NewPlatformAdapter(PlatformAdapter):
     def format_menu(self, items: list[MenuItem], categories: list[Category]) -> dict | None:
         # Transform to platform format
         return formatted_menu
-        
+
     async def publish_menu(self, restaurant_id: str, formatted_menu: dict) -> bool:
         # Call platform API
         return success

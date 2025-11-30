@@ -1,8 +1,6 @@
 """Shared pytest fixtures and configuration for all tests."""
 
 import pytest
-from typing import AsyncGenerator
-from unittest.mock import AsyncMock, MagicMock
 
 
 @pytest.fixture

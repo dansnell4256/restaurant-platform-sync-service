@@ -65,8 +65,8 @@ Menu Change → EventBridge Event → Sync Service → Platform APIs
 class PlatformAdapter(ABC):
     @abstractmethod
     def format_menu(self, items: list[MenuItem], categories: list[Category]) -> dict | None
-    
-    @abstractmethod  
+
+    @abstractmethod
     async def publish_menu(self, restaurant_id: str, formatted_menu: dict) -> bool
 ```
 
@@ -214,7 +214,7 @@ if not await adapter.publish_menu(restaurant_id, menu_data):
 class PlatformAdapterFactory:
     def __init__(self, platform_configs: dict):
         self.configs = platform_configs
-    
+
     def create_adapter(self, platform: str) -> PlatformAdapter:
         config = self.configs[platform]
         return DoorDashAdapter(
