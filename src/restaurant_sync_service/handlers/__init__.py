@@ -1,1 +1,1 @@
-"""Event and API request handlers."""
+"""Event and API handlers for the sync service."""
