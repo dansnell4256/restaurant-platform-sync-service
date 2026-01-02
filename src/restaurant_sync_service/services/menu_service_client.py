@@ -54,7 +54,9 @@ class MenuServiceClient:
                 return items
 
         except (httpx.HTTPStatusError, httpx.RequestError) as e:
-            logger.error(f"Failed to fetch menu items for restaurant {restaurant_id}: {e}")  # pragma: no cover
+            logger.error(
+                f"Failed to fetch menu items for restaurant {restaurant_id}: {e}"
+            )  # pragma: no cover
             return None
 
     async def get_categories(self, restaurant_id: str) -> list[Category] | None:
@@ -82,10 +84,14 @@ class MenuServiceClient:
                 return categories
 
         except (httpx.HTTPStatusError, httpx.RequestError) as e:
-            logger.error(f"Failed to fetch categories for restaurant {restaurant_id}: {e}")  # pragma: no cover
+            logger.error(
+                f"Failed to fetch categories for restaurant {restaurant_id}: {e}"
+            )  # pragma: no cover
             return None
 
-    async def get_menu_data(self, restaurant_id: str) -> tuple[list[MenuItem], list[Category]] | None:
+    async def get_menu_data(
+        self, restaurant_id: str
+    ) -> tuple[list[MenuItem], list[Category]] | None:
         """Fetch complete menu data (items and categories) for a restaurant.
 
         This is a convenience method that fetches both menu items and categories

@@ -1,6 +1,5 @@
 """Unit tests for SyncService."""
 
-import asyncio
 from datetime import UTC, datetime
 from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock
@@ -14,7 +13,7 @@ from restaurant_sync_service.repositories.sync_repositories import (
     SyncStatusRepository,
 )
 from restaurant_sync_service.services.menu_service_client import MenuServiceClient
-from restaurant_sync_service.services.sync_service import SyncResult, SyncService
+from restaurant_sync_service.services.sync_service import SyncService
 
 
 @pytest.mark.unit

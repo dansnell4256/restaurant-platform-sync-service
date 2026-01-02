@@ -67,29 +67,30 @@ class ErrorService:
         success = self.error_repository.save_error(error)
         return error_id if success else None
 
-    async def get_error(self, error_id: str) -> SyncError | None:
-        """Get a specific error by ID.
+    async def get_error(self, error_id: str, created_at: datetime) -> SyncError | None:
+        """Get a specific error by ID and creation timestamp.
 
         Args:
             error_id: The error ID to retrieve
+            created_at: The creation timestamp (part of the composite key)
 
         Returns:
             SyncError if found, None otherwise
         """
-        return self.error_repository.get_error(error_id)
+        return self.error_repository.get_error(error_id, created_at)
 
     async def get_errors_for_restaurant(
         self,
         restaurant_id: str,
         platform: str | None = None,
-        limit: int | None = None,
+        limit: int = 50,
     ) -> list[SyncError]:
         """Get all errors for a restaurant, optionally filtered by platform.
 
         Args:
             restaurant_id: The restaurant ID
             platform: Optional platform to filter by
-            limit: Optional limit on number of errors to return
+            limit: Limit on number of errors to return (default 50)
 
         Returns:
             List of SyncError objects, empty list if none found
@@ -105,7 +106,7 @@ class ErrorService:
 
         return errors if errors else []
 
-    async def increment_retry_count(self, error_id: str) -> bool:
+    async def increment_retry_count(self, error_id: str, created_at: datetime) -> bool:
         """Increment the retry count for an error.
 
         This should be called each time a manual retry is attempted
@@ -113,17 +114,18 @@ class ErrorService:
 
         Args:
             error_id: The error ID to update
+            created_at: The creation timestamp (part of the composite key)
 
         Returns:
             True if updated successfully, False otherwise
         """
         # Get current error to determine current retry count
-        error = self.error_repository.get_error(error_id)
+        error = self.error_repository.get_error(error_id, created_at)
         if not error:
             return False
 
         new_retry_count = error.retry_count + 1
-        return self.error_repository.update_retry_count(error_id, new_retry_count)
+        return self.error_repository.update_retry_count(error_id, created_at, new_retry_count)
 
     def _create_menu_snapshot(
         self,

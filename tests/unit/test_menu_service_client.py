@@ -248,7 +248,11 @@ class TestMenuServiceClient:
     @pytest.mark.asyncio
     async def test_get_menu_data_items_failure(self, client: MenuServiceClient) -> None:
         """Test that get_menu_data returns None if items fetch fails."""
-        with patch("httpx.AsyncClient.get", new_callable=AsyncMock, side_effect=httpx.RequestError("Error", request=MagicMock())):
+        with patch(
+            "httpx.AsyncClient.get",
+            new_callable=AsyncMock,
+            side_effect=httpx.RequestError("Error", request=MagicMock()),
+        ):
             menu_data = await client.get_menu_data("rest_123")
 
         assert menu_data is None

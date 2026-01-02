@@ -113,7 +113,9 @@ class SyncService:
         publish_success = await adapter.publish_menu(restaurant_id, formatted_menu)
 
         if not publish_success and retry:
-            logger.warning(f"First publish attempt failed for {platform}, retrying...")  # pragma: no cover
+            logger.warning(
+                f"First publish attempt failed for {platform}, retrying..."
+            )  # pragma: no cover
             await asyncio.sleep(self.retry_delay_seconds)
             publish_success = await adapter.publish_menu(restaurant_id, formatted_menu)
 

@@ -55,9 +55,7 @@ class TestErrorService:
             )
         ]
 
-    def test_service_initialization(
-        self, mock_error_repo: SyncErrorRepository
-    ) -> None:
+    def test_service_initialization(self, mock_error_repo: SyncErrorRepository) -> None:
         """Test that service initializes correctly."""
         service = ErrorService(error_repository=mock_error_repo)
         assert service.error_repository == mock_error_repo
@@ -141,9 +139,10 @@ class TestErrorService:
         mock_error_repo: SyncErrorRepository,
     ) -> None:
         """Test retrieving a specific error by ID."""
+        created_time = datetime.now(UTC)
         mock_error = SyncError(
             error_id="err_123",
-            created_at=datetime.now(UTC),
+            created_at=created_time,
             restaurant_id="rest_123",
             platform="doordash",
             error_details="Test error",
@@ -152,10 +151,10 @@ class TestErrorService:
         )
         mock_error_repo.get_error = MagicMock(return_value=mock_error)
 
-        error = await error_service.get_error("err_123")
+        error = await error_service.get_error("err_123", created_time)
 
         assert error == mock_error
-        mock_error_repo.get_error.assert_called_once_with("err_123")
+        mock_error_repo.get_error.assert_called_once_with("err_123", created_time)
 
     @pytest.mark.asyncio
     async def test_get_error_not_found(
@@ -164,9 +163,10 @@ class TestErrorService:
         mock_error_repo: SyncErrorRepository,
     ) -> None:
         """Test retrieving error returns None when not found."""
+        created_time = datetime.now(UTC)
         mock_error_repo.get_error = MagicMock(return_value=None)
 
-        error = await error_service.get_error("err_nonexistent")
+        error = await error_service.get_error("err_nonexistent", created_time)
 
         assert error is None
 
@@ -204,7 +204,7 @@ class TestErrorService:
         assert len(errors) == 2
         assert errors == mock_errors
         mock_error_repo.list_errors_for_restaurant.assert_called_once_with(
-            restaurant_id="rest_123", limit=None
+            restaurant_id="rest_123", limit=50
         )
 
     @pytest.mark.asyncio
@@ -227,10 +227,11 @@ class TestErrorService:
         ]
         mock_error_repo.list_errors_for_restaurant = MagicMock(return_value=mock_errors)
 
-        errors = await error_service.get_errors_for_restaurant("rest_123", limit=10)
+        errors = await error_service.get_errors_for_restaurant("rest_123", limit=25)
 
+        assert len(errors) == 1
         mock_error_repo.list_errors_for_restaurant.assert_called_once_with(
-            restaurant_id="rest_123", limit=10
+            restaurant_id="rest_123", limit=25
         )
 
     @pytest.mark.asyncio
@@ -241,9 +242,10 @@ class TestErrorService:
     ) -> None:
         """Test incrementing retry count for an error."""
         # Mock the get_error to return an error with retry_count=0
+        created_time = datetime.now(UTC)
         mock_error = SyncError(
             error_id="err_123",
-            created_at=datetime.now(UTC),
+            created_at=created_time,
             restaurant_id="rest_123",
             platform="doordash",
             error_details="Test error",
@@ -253,10 +255,10 @@ class TestErrorService:
         mock_error_repo.get_error = MagicMock(return_value=mock_error)
         mock_error_repo.update_retry_count = MagicMock(return_value=True)
 
-        result = await error_service.increment_retry_count("err_123")
+        result = await error_service.increment_retry_count("err_123", created_time)
 
         assert result is True
-        mock_error_repo.update_retry_count.assert_called_once_with("err_123", 1)
+        mock_error_repo.update_retry_count.assert_called_once_with("err_123", created_time, 1)
 
     @pytest.mark.asyncio
     async def test_increment_retry_count_failure(
@@ -265,9 +267,10 @@ class TestErrorService:
         mock_error_repo: SyncErrorRepository,
     ) -> None:
         """Test that incrementing retry count returns False on failure."""
-        mock_error_repo.update_retry_count = MagicMock(return_value=False)
+        created_time = datetime.now(UTC)
+        mock_error_repo.get_error = MagicMock(return_value=None)
 
-        result = await error_service.increment_retry_count("err_123")
+        result = await error_service.increment_retry_count("err_123", created_time)
 
         assert result is False
 
