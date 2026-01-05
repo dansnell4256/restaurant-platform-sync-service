@@ -1,7 +1,7 @@
 """FastAPI application for admin API endpoints."""
 
 import logging
-from typing import Any, Union
+from typing import Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.responses import JSONResponse
@@ -108,7 +108,9 @@ def create_app(
         Returns:
             List of sync statuses for each platform
         """
-        statuses: list[SyncStatus] = await app.state.sync_service.get_all_statuses_for_restaurant(restaurant_id)
+        statuses: list[SyncStatus] = await app.state.sync_service.get_all_statuses_for_restaurant(
+            restaurant_id
+        )
         return statuses
 
     @app.post(
@@ -119,7 +121,7 @@ def create_app(
     async def trigger_full_refresh(
         restaurant_id: str,
         _api_key: str = Depends(validate_api_key),
-    ) -> Union[SyncTriggerResponse, JSONResponse]:
+    ) -> SyncTriggerResponse | JSONResponse:
         """Trigger a full menu refresh to all configured platforms.
 
         Args:
