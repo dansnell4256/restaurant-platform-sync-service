@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 
 from restaurant_sync_service.models.menu_models import Category, MenuItem
 from restaurant_sync_service.models.sync_models import SyncError
+from restaurant_sync_service.observability.metrics import record_error_queue_change
 from restaurant_sync_service.repositories.sync_repositories import SyncErrorRepository
 
 logger = logging.getLogger(__name__)
@@ -65,6 +66,8 @@ class ErrorService:
         )
 
         success = self.error_repository.save_error(error)
+        if success:
+            record_error_queue_change(1)  # Increment error queue depth
         return error_id if success else None
 
     async def get_error(self, error_id: str, created_at: datetime) -> SyncError | None:

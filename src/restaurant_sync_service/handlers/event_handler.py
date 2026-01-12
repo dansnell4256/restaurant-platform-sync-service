@@ -6,6 +6,7 @@ from typing import Any
 from pydantic import BaseModel, ValidationError
 
 from restaurant_sync_service.adapters.base_adapter import PlatformAdapter
+from restaurant_sync_service.observability import traced
 from restaurant_sync_service.services.error_service import ErrorService
 from restaurant_sync_service.services.sync_service import SyncService
 
@@ -68,6 +69,7 @@ class EventHandler:
         self.error_service = error_service
         self.platform_adapters = platform_adapters
 
+    @traced("process_menu_changed_event", service_name="sync-svc")
     async def handle_menu_changed(self, event: MenuChangedEvent) -> bool:
         """Handle a menu changed event.
 

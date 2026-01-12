@@ -2,11 +2,18 @@
 
 import asyncio
 import logging
+import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from restaurant_sync_service.adapters.base_adapter import PlatformAdapter
 from restaurant_sync_service.models.sync_models import SyncStatus, SyncStatusEnum
+from restaurant_sync_service.observability import traced
+from restaurant_sync_service.observability.metrics import (
+    record_sync_duration,
+    record_sync_failure,
+    record_sync_success,
+)
 from restaurant_sync_service.repositories.sync_repositories import (
     SyncStatusRepository,
 )
@@ -57,6 +64,7 @@ class SyncService:
         self.status_repository = status_repository
         self.retry_delay_seconds = retry_delay_seconds
 
+    @traced("sync_restaurant_menu", service_name="sync-svc")
     async def sync_to_platform(
         self,
         restaurant_id: str,
@@ -81,6 +89,7 @@ class SyncService:
         Returns:
             SyncResult indicating success/failure and details
         """
+        start_time = time.time()
         # Step 1: Fetch menu data
         menu_data = await self.menu_service_client.get_menu_data(restaurant_id)
         if menu_data is None:
@@ -119,9 +128,13 @@ class SyncService:
             await asyncio.sleep(self.retry_delay_seconds)
             publish_success = await adapter.publish_menu(restaurant_id, formatted_menu)
 
-        # Step 4: Record sync status
+        # Step 4: Record sync status and metrics
+        duration = time.time() - start_time
+        record_sync_duration(platform, duration)
+
         if publish_success:
             await self._save_success_status(restaurant_id, platform, len(items))
+            record_sync_success(platform, len(items))
             return SyncResult(
                 success=True,
                 platform=platform,
@@ -131,6 +144,7 @@ class SyncService:
             error_msg = f"Failed to publish menu to {platform} after all retry attempts"
             logger.error(error_msg)  # pragma: no cover
             await self._save_failed_status(restaurant_id, platform, len(items))
+            record_sync_failure(platform, "publish_failed")
             return SyncResult(
                 success=False,
                 platform=platform,

@@ -11,6 +11,7 @@ from restaurant_sync_service.adapters.base_adapter import PlatformAdapter
 from restaurant_sync_service.auth.api_dependencies import get_api_key_from_header
 from restaurant_sync_service.auth.api_key_validator import APIKeyValidator
 from restaurant_sync_service.models.sync_models import SyncError, SyncStatus
+from restaurant_sync_service.observability import setup_observability
 from restaurant_sync_service.services.error_service import ErrorService
 from restaurant_sync_service.services.sync_service import SyncService
 
@@ -77,6 +78,9 @@ def create_app(
     app.state.error_service = error_service
     app.state.platform_adapters = platform_adapters
     app.state.api_key_validator = APIKeyValidator(api_keys=api_keys)
+
+    # Setup OpenTelemetry instrumentation for FastAPI
+    setup_observability(app)
 
     @app.get("/health", response_model=HealthResponse, tags=["Health"])
     async def health_check() -> HealthResponse:
