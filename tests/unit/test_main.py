@@ -27,7 +27,12 @@ class TestGetDynamoDBResource:
 
     @patch.dict(
         os.environ,
-        {"DYNAMODB_ENDPOINT": "http://localhost:8000", "AWS_REGION": "us-east-1"},
+        {
+            "DYNAMODB_ENDPOINT": "http://localhost:8000",
+            "AWS_REGION": "us-east-1",
+            "AWS_ACCESS_KEY_ID": "test-key",
+            "AWS_SECRET_ACCESS_KEY": "test-secret",
+        },
         clear=True,
     )
     @patch("src.main.boto3.resource")
@@ -42,8 +47,8 @@ class TestGetDynamoDBResource:
             "dynamodb",
             endpoint_url="http://localhost:8000",
             region_name="us-east-1",
-            aws_access_key_id="dummy",
-            aws_secret_access_key="dummy",
+            aws_access_key_id="test-key",
+            aws_secret_access_key="test-secret",
         )
         assert result == mock_resource
 

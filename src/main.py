@@ -37,16 +37,20 @@ def get_dynamodb_resource() -> Any:
     region = os.getenv("AWS_REGION", "us-east-1")
 
     if endpoint_url:
+        # Local DynamoDB - use environment variables or defaults for credentials
+        access_key = os.getenv("AWS_ACCESS_KEY_ID")
+        secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
         logger.info(f"Using local DynamoDB at {endpoint_url}")
         return boto3.resource(
             "dynamodb",
             endpoint_url=endpoint_url,
             region_name=region,
-            aws_access_key_id="dummy",
-            aws_secret_access_key="dummy",
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
         )
     else:
         logger.info(f"Using AWS DynamoDB in region {region}")
+        # Production - boto3 will use default credential chain (IAM role, env vars, etc.)
         return boto3.resource("dynamodb", region_name=region)
 
 
