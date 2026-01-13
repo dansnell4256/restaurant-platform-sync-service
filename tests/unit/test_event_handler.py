@@ -6,7 +6,7 @@ import pytest
 
 from restaurant_sync_service.adapters.base_adapter import PlatformAdapter
 from restaurant_sync_service.handlers.event_handler import (
-    EventHandler,
+    MenuEventHandler,
     MenuChangedEvent,
     parse_eventbridge_event,
 )
@@ -123,9 +123,9 @@ class TestEventHandler:
         mock_sync_service: SyncService,
         mock_error_service: ErrorService,
         mock_adapters: dict[str, PlatformAdapter],
-    ) -> EventHandler:
+    ) -> MenuEventHandler:
         """Create an EventHandler with mocked dependencies."""
-        return EventHandler(
+        return MenuEventHandler(
             sync_service=mock_sync_service,
             error_service=mock_error_service,
             platform_adapters=mock_adapters,
@@ -138,7 +138,7 @@ class TestEventHandler:
         mock_adapters: dict[str, PlatformAdapter],
     ) -> None:
         """Test that handler initializes correctly."""
-        handler = EventHandler(
+        handler = MenuEventHandler(
             sync_service=mock_sync_service,
             error_service=mock_error_service,
             platform_adapters=mock_adapters,
@@ -150,7 +150,7 @@ class TestEventHandler:
     @pytest.mark.asyncio
     async def test_handle_menu_changed_success(
         self,
-        event_handler: EventHandler,
+        event_handler: MenuEventHandler,
         mock_sync_service: SyncService,
     ) -> None:
         """Test successfully handling a menu changed event."""
@@ -176,7 +176,7 @@ class TestEventHandler:
     @pytest.mark.asyncio
     async def test_handle_menu_changed_partial_failure(
         self,
-        event_handler: EventHandler,
+        event_handler: MenuEventHandler,
         mock_sync_service: SyncService,
         mock_error_service: ErrorService,
     ) -> None:
@@ -211,7 +211,7 @@ class TestEventHandler:
     @pytest.mark.asyncio
     async def test_handle_menu_changed_all_failures(
         self,
-        event_handler: EventHandler,
+        event_handler: MenuEventHandler,
         mock_sync_service: SyncService,
         mock_error_service: ErrorService,
     ) -> None:
@@ -251,7 +251,7 @@ class TestEventHandler:
     @pytest.mark.asyncio
     async def test_handle_eventbridge_event_success(
         self,
-        event_handler: EventHandler,
+        event_handler: MenuEventHandler,
         mock_sync_service: SyncService,
     ) -> None:
         """Test handling a complete EventBridge event."""
@@ -283,7 +283,7 @@ class TestEventHandler:
     @pytest.mark.asyncio
     async def test_handle_eventbridge_event_invalid_event(
         self,
-        event_handler: EventHandler,
+        event_handler: MenuEventHandler,
     ) -> None:
         """Test handling an invalid EventBridge event."""
         eventbridge_event = {
@@ -301,7 +301,7 @@ class TestEventHandler:
     @pytest.mark.asyncio
     async def test_handle_eventbridge_event_sync_failure(
         self,
-        event_handler: EventHandler,
+        event_handler: MenuEventHandler,
         mock_sync_service: SyncService,
         mock_error_service: ErrorService,
     ) -> None:
@@ -337,7 +337,7 @@ class TestEventHandler:
     @pytest.mark.asyncio
     async def test_handle_menu_changed_with_retry(
         self,
-        event_handler: EventHandler,
+        event_handler: MenuEventHandler,
         mock_sync_service: SyncService,
     ) -> None:
         """Test that sync is called with retry enabled."""

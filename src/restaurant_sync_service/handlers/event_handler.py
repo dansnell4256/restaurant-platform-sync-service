@@ -44,7 +44,7 @@ def parse_eventbridge_event(event: dict[str, Any]) -> MenuChangedEvent | None:
         return None
 
 
-class EventHandler:
+class MenuEventHandler:
     """Handler for processing EventBridge menu change events.
 
     This handler coordinates the sync process when menu changes are detected.
